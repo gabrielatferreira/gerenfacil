@@ -1,7 +1,6 @@
 package com.example.projetogerenfacil;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +15,9 @@ public class MainActivity extends AppCompatActivity {
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
+
+    private static final String defaultUser = "12345678900";
+    private static final String defaultPass = "password";
 
     private EditText etUser, etPass;
 
@@ -32,63 +34,26 @@ public class MainActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Lógica para verificar as credenciais e navegar para a próxima tela
+                // Se as credenciais estiverem corretas, inicie a próxima atividade
+
                 String enteredUsername = etUser.getText().toString();
                 String enteredPassword = etPass.getText().toString();
 
                 if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
                     // Campos não preenchidos
                     showToast("msg_campos_invalidos");
+                } else if (enteredUsername.equals(defaultUser) && enteredPassword.equals(defaultPass)) {
+                    // Autenticação ok
+                    Intent loginOK = new Intent(MainActivity.this, NextActivity.class);
+                    startActivity(loginOK);
                 } else {
-                    // Inicia validação dos dados
-                    String nome, email, user, pass;
-
-                    SharedPreferences pref;
-                    pref = getSharedPreferences("admin" + enteredUsername, MODE_PRIVATE);
-
-                    nome = pref.getString("chNome", "");
-                    email = pref.getString("chEmail", "");
-                    user = pref.getString("chCPF_CNPJ", "");
-                    pass = pref.getString("chPass", "");
-
-                    if (!nome.isEmpty()) { // se nome não está vazio é pq encontrou cadastro de admin
-                        if (enteredUsername.equals(user) && enteredPassword.equals(pass)) {
-                            // Login OK
-                            //InterfaceNavegacaoActivity.
-                            //InterfaceNavegacaoActivity.tvEmail.setText(user);
-
-                            Intent Intent = new Intent(MainActivity.this, InterfaceNavegacaoActivity.class);
-                            Intent.putExtra("Nome", nome);
-                            Intent.putExtra("Email", email);
-                            startActivity(Intent);
-                        } else {
-                            // Autenticação falhou
-                            showToast("msg_falha_autenticacao");
-                        }
-                    } else { // se não encontrou cadastro de admin, testa se há cadastro de usuário
-                        pref = getSharedPreferences("user" + enteredUsername, MODE_PRIVATE);
-
-                        nome = pref.getString("chNome", "");
-                        email = pref.getString("chEmail", "");
-                        user = pref.getString("chCPF_CNPJ", "");
-                        pass = pref.getString("chPass", "");
-
-                        if (enteredUsername.equals(user) && enteredPassword.equals(pass)) {
-                            // Login OK
-                            //InterfaceNavegacaoActivity.
-                            //InterfaceNavegacaoActivity.tvEmail.setText(user);
-
-                            Intent Intent = new Intent(MainActivity.this, InterfaceNavegacaoActivity.class);
-                            Intent.putExtra("Nome", nome);
-                            Intent.putExtra("Email", email);
-                            startActivity(Intent);
-                        } else {
-                            // Autenticação falhou
-                            showToast("msg_falha_autenticacao");
-                        }
-                    }
+                    // Autenticação falhou
+                    showToast("msg_falha_autenticacao");
                 }
             }
         });
+
 
 
         TextView forgotPasswordTextView = findViewById(R.id.tvForgotPassword);
